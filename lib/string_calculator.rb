@@ -1,23 +1,36 @@
 # frozen_string_literal: true
 
-# StringCalculator is a simple calculator that takes a string of numbers as input
-# and returns their sum. It handles the following cases:
+# StringCalculator is a class that provides functionality to add numbers from a string input.
+# It supports the following features:
 # - Empty string returns 0
-# - Single number returns the number itself
-# - Comma-separated numbers returns their sum
+# - Numbers can be delimited by commas or newlines
+# - Custom delimiter can be specified using //delimiter\n format
+# - Negative numbers are not allowed and will raise an exception
+# - Numbers are summed together
 #
-# @example
+# @example Basic usage
 #   calculator = StringCalculator.new
-#   calculator.add('')      # => 0
-#   calculator.add('5')     # => 5
-#   calculator.add('1,2,3') # => 6
+#   calculator.add("1,2,3")    # => 6
+#   calculator.add("1\n2,3")   # => 6
+#   calculator.add("//;\n1;2") # => 3
+#
+# @example Error cases
+#   calculator.add("1,-2,3")   # => raises "negatives not allowed: -2"
+#   calculator.add("")         # => 0
 class StringCalculator
   def add(input)
     return 0 if input.empty?
 
-    numbers = input.split(/,|\n/).map(&:to_i)
+    if input.start_with?('//')
+      delimiter, input = input.split("\n", 2)
+      delimiter = delimiter[2]
+      numbers = input.split(/#{Regexp.escape(delimiter)}/)
+    else
+      numbers = input.split(/,|\n/)
+    end
+
     integers = numbers.map(&:to_i)
-    negatives = integers.select { |n| n < 0 }
+    negatives = integers.select(&:negative?)
     raise "negatives not allowed: #{negatives.join(', ')}" if negatives.any?
 
     integers.sum
