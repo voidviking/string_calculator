@@ -16,6 +16,10 @@ class StringCalculator
     return 0 if input.empty?
 
     numbers = input.split(/,|\n/).map(&:to_i)
-    numbers.sum
+    integers = numbers.map(&:to_i)
+    negatives = integers.select { |n| n < 0 }
+    raise "negatives not allowed: #{negatives.join(', ')}" if negatives.any?
+
+    integers.sum
   end
 end
