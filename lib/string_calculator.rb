@@ -18,7 +18,7 @@
 #   calculator.add("1,-2,3")   # => raises "negatives not allowed: -2"
 #   calculator.add("")         # => 0
 class StringCalculator
-  def add(input)
+  def call(input)
     return 0 if input.empty?
 
     if input.start_with?('//')
@@ -28,17 +28,30 @@ class StringCalculator
     else
       numbers = input.split(/,|\n/)
     end
-
     integers = numbers.map(&:to_i)
     negatives = integers.select(&:negative?)
     raise "negatives not allowed: #{negatives.join(', ')}" if negatives.any?
 
+    process(delimiter, integers)
+  end
+
+  private
+
+  def process(delimiter, numbers)
     if delimiter.eql?('*')
-      integers.reduce(1) do |actual_value, number|
-        actual_value * number
-      end
+      times(numbers)
     else
-      integers.sum
+      sum(numbers)
+    end
+  end
+
+  def sum(numbers)
+    numbers.sum
+  end
+
+  def times(numbers)
+    numbers.reduce(1) do |actual_value, number|
+      actual_value * number
     end
   end
 end
