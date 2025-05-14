@@ -33,6 +33,12 @@ class StringCalculator
     negatives = integers.select(&:negative?)
     raise "negatives not allowed: #{negatives.join(', ')}" if negatives.any?
 
-    integers.sum
+    if delimiter.eql?('*')
+      integers.reduce(1) do |actual_value, number|
+        actual_value * number
+      end
+    else
+      integers.sum
+    end
   end
 end

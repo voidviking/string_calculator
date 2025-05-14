@@ -31,4 +31,8 @@ RSpec.describe StringCalculator do
   it 'supports custom delimiter' do
     expect(StringCalculator.new.add("//;\n1;2")).to eq(3)
   end
+
+  it 'custom delimiter can also have multiplication done for args' do
+    expect(StringCalculator.new.add("//*\n1*2")).to eq(2)
+  end
 end
