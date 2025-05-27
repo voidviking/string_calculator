@@ -17,41 +17,57 @@
 # @example Error cases
 #   calculator.add("1,-2,3")   # => raises "negatives not allowed: -2"
 #   calculator.add("")         # => 0
-class StringCalculator
-  def call(input)
-    return 0 if input.empty?
+class StringCalculatorSevice
+  attr_reader( *%i[input delimiter numbers] )
 
-    if input.start_with?('//')
-      delimiter, input = input.split("\n", 2)
-      delimiter = delimiter[2]
-      numbers = input.split(/#{Regexp.escape(delimiter)}/)
+  def initialize(input)
+    @input = input
+  end
+
+  def call
+    return 0 if @input.empty?
+
+    if @input.start_with?('//')
+      @delimiter, @input = @input.split("\n", 2)
+      @delimiter = @delimiter[2]
+      @numbers = @input.split(/#{Regexp.escape(@delimiter)}/)
     else
-      numbers = input.split(/,|\n/)
+      @numbers = @input.split(/,|\n/)
     end
-    integers = numbers.map(&:to_i)
-    negatives = integers.select(&:negative?)
+    @numbers = @numbers.map(&:to_i)
+    negatives = numbers.select(&:negative?)
     raise "negatives not allowed: #{negatives.join(', ')}" if negatives.any?
 
-    process(delimiter, integers)
+    process
   end
 
   private
 
-  def process(delimiter, numbers)
+  def process
     if delimiter.eql?('*')
-      times(numbers)
+      times
     else
-      sum(numbers)
+      if delimiter.eql?('o')
+        @numbers = get_odd_numbers
+      end
+
+      sum
     end
   end
 
-  def sum(numbers)
+  def sum
     numbers.sum
   end
 
-  def times(numbers)
+  def times
     numbers.reduce(1) do |actual_value, number|
       actual_value * number
     end
+  end
+
+  def get_odd_numbers
+    [0] unless numbers.any?
+
+    @numbers.select { |number| number.odd?  }
   end
 end
